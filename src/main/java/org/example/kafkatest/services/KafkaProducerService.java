@@ -43,4 +43,5 @@ public class KafkaProducerService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to serialize " + messageType, e);
         }
-    }}
+    }
+}
