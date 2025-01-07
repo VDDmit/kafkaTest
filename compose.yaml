@@ -3,7 +3,7 @@ services:
     container_name: postgres
     image: postgres:13-alpine3.17
     environment:
-      POSTGRES_DB:
+      POSTGRES_DB: db_for_test_kafka
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 12341234
     ports:

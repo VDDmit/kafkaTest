@@ -1,4 +1,4 @@
-package org.example.kafkatest.services;
+package org.example.kafkatest.services.producers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
