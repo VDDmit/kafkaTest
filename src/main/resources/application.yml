@@ -1,4 +1,15 @@
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/your_database_name
+    username: postgres
+    password: 12341234
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
