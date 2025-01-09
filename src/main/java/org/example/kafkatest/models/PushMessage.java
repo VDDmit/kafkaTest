@@ -6,12 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 public class PushMessage {
     @Id
+    @UuidGenerator
     private String id;
 
     @NotNull(message = "Topic cannot be null")
