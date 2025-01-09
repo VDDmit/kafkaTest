@@ -1,6 +1,8 @@
 package org.example.kafkatest.models;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -17,7 +19,8 @@ public class NotificationStats {
     @UuidGenerator
     private String id;
     @NotNull
-    private String notificationType; // EMAIL, SMS, PUSH
+    @Enumerated(EnumType.STRING)
+    private TypeOfNotification notificationType; // EMAIL, SMS, PUSH
 
     @NotNull
     private Long totalSent; // Общее количество отправленных
