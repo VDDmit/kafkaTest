@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.kafkatest.models.SMS;
+import org.example.kafkatest.models.TypeOfNotification;
 import org.example.kafkatest.repositories.SMSRepository;
 import org.example.kafkatest.services.dlt.DLTService;
+import org.example.kafkatest.services.stats.NotificationStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ public class KafkaSMSConsumerService {
 
     private final SMSRepository smsRepository;
     private final DLTService dltService;
+    private final NotificationStatsService notificationStatsService;
 
     @KafkaListener(topics = "sms", groupId = "my-group")
     public void consumeSMS(String message) {
@@ -26,9 +29,11 @@ public class KafkaSMSConsumerService {
             SMS sms = objectMapper.readValue(message, SMS.class);
             smsRepository.save(sms);
             log.info("SMS saved to database: {}", sms);
+            notificationStatsService.updateStats(TypeOfNotification.SMS, true);
         } catch (JsonProcessingException e) {
             log.error("Failed to deserialize SMS message", e);
             dltService.sendToDLT("sms", message, e);
+            notificationStatsService.updateStats(TypeOfNotification.SMS, false);
         }
     }
 }

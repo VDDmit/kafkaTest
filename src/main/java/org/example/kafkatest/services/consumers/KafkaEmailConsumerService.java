@@ -34,7 +34,6 @@ public class KafkaEmailConsumerService {
             log.error("Failed to deserialize email message", e);
             dltService.sendToDLT("email", message, e);
             notificationStatsService.updateStats(TypeOfNotification.EMAIL, false);
-
         }
     }
 }
