@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class SmsNotificationHandler implements NotificationHandler {
+public class SMSNotificationHandler implements NotificationHandler {
     private final KafkaSMSConsumerService kafkaSMSConsumerService;
 
     @Override

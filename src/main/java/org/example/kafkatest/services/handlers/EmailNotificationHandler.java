@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class EmailNotificationHandler implements NotificationHandler {
-    private final KafkaEmailConsumerService emailService;
+    private final KafkaEmailConsumerService emailConsumerService;
 
     @Override
     public void handle(String message) {
-        emailService.consumeEmail(message);
+        emailConsumerService.consumeEmail(message);
     }
 }
