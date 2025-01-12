@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Email {
     @Id
     @UuidGenerator
