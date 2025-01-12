@@ -15,7 +15,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 class KafkaProducerServiceTest {
 
@@ -76,7 +76,7 @@ class KafkaProducerServiceTest {
     }
 
     @Test
-    void sendSMS() throws JsonProcessingException{
+    void sendSMS() throws JsonProcessingException {
         String topic = "sms";
         SMS sms = SMS.builder()
                 .message("Massage")
@@ -91,4 +91,25 @@ class KafkaProducerServiceTest {
         assertEquals(expectedMessage, captor.getValue());
     }
 
+    @Test
+    void testSendMessageThrowsException() throws JsonProcessingException {
+        String topic = "email";
+        Email email = Email.builder()
+                .recipient("test@example.com")
+                .subject("Subject")
+                .body("Body")
+                .build();
+
+        ObjectMapper mockObjectMapper = mock(ObjectMapper.class);
+        when(mockObjectMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Test Exception") {
+        });
+
+        KafkaProducerService faultyService = new KafkaProducerService(kafkaTemplate, mockObjectMapper);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                faultyService.sendEmail(topic, email)
+        );
+
+        assertTrue(exception.getMessage().contains("Failed to serialize email"));
+    }
 }
