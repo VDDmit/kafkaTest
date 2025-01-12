@@ -3,6 +3,8 @@ package org.example.kafkatest.services.producers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.kafkatest.models.Email;
+import org.example.kafkatest.models.PushMessage;
+import org.example.kafkatest.models.SMS;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -58,10 +60,35 @@ class KafkaProducerServiceTest {
     }
 
     @Test
-    void sendPushMessage() {
+    void sendPushMessage() throws JsonProcessingException {
+        String topic = "push-messages";
+        PushMessage pushMessage = PushMessage.builder().
+                message("Message")
+                .topic("Topic")
+                .build();
+        kafkaProducerService.sendPushMessage(topic, pushMessage);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(kafkaTemplate).send(eq(topic), captor.capture());
+
+        String expectedMessage = objectMapper.writeValueAsString(pushMessage);
+        assertEquals(expectedMessage, captor.getValue());
     }
 
     @Test
-    void sendSMS() {
+    void sendSMS() throws JsonProcessingException{
+        String topic = "sms";
+        SMS sms = SMS.builder()
+                .message("Massage")
+                .receiverPhone("+89092159999")
+                .senderPhone("+89092152299")
+                .build();
+        kafkaProducerService.sendSMS(topic, sms);
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(kafkaTemplate).send(eq(topic), captor.capture());
+
+        String expectedMessage = objectMapper.writeValueAsString(sms);
+        assertEquals(expectedMessage, captor.getValue());
     }
+
 }
