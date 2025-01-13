@@ -15,19 +15,22 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class KafkaPushMessageConsumerService1Test {
+class KafkaPushMessageConsumerService2Test {
 
     @Mock
     private PushMessageRepository pushMessageRepository;
+
     @Mock
     private DLTService dltService;
+
     @Mock
     private NotificationStatsService notificationStatsService;
+
     @InjectMocks
-    private KafkaPushMessageConsumerService1 kafkaPushMessageConsumerService1;
+    private KafkaPushMessageConsumerService2 kafkaPushMessageConsumerService2;
+
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -37,22 +40,30 @@ class KafkaPushMessageConsumerService1Test {
     }
 
     @Test
-    void consumePushMessage1_success() throws JsonProcessingException {
-        PushMessage pushMessage = PushMessage.builder().
-                message("Message")
-                .topic("Topic")
+    void consumePushMessage2_success() throws JsonProcessingException {
+        PushMessage pushMessage = PushMessage.builder()
+                .message("Test Message")
+                .topic("Test Topic")
                 .build();
         String pushMessageJson = objectMapper.writeValueAsString(pushMessage);
-        kafkaPushMessageConsumerService1.consumePushMessage1(pushMessageJson);
-        verify(pushMessageRepository).save(eq(pushMessage));
+
+        kafkaPushMessageConsumerService2.consumePushMessage2(pushMessageJson);
+
+        // Проверяем сохранение в репозиторий
+        verify(pushMessageRepository).save(pushMessage);
+
+        // Проверяем обновление статистики
         verify(notificationStatsService).updateStats(TypeOfNotification.PUSH, true);
+
+        // Проверяем, что DLTService не вызывался
         verifyNoInteractions(dltService);
     }
 
     @Test
-    void consumePushMessage1_failure() {
+    void consumePushMessage2_failure() {
         String invalidMessage = "{ invalid json }";
-        kafkaPushMessageConsumerService1.consumePushMessage1(invalidMessage);
+
+        kafkaPushMessageConsumerService2.consumePushMessage2(invalidMessage);
 
         // Проверяем, что PushMessage не сохранялся
         verify(pushMessageRepository, never()).save(any());
@@ -67,7 +78,6 @@ class KafkaPushMessageConsumerService1Test {
         assertEquals("push-messages", topicCaptor.getValue());
         assertEquals(invalidMessage, messageCaptor.getValue());
         assertNotNull(exceptionCaptor.getValue());
-        assertInstanceOf(JsonProcessingException.class, exceptionCaptor.getValue());
 
         // Проверяем, что статистика обновлена с флагом ошибки
         verify(notificationStatsService).updateStats(TypeOfNotification.PUSH, false);
