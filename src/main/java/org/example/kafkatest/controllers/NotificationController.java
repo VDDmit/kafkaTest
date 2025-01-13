@@ -24,8 +24,11 @@ public class NotificationController {
     @PostMapping("/send/{type}")
     public ResponseEntity<String> sendNotification(@PathVariable TypeOfNotification type, @RequestBody String message) {
         try {
+            // Проверка на тип уведомления
             NotificationHandler handler = handlerFactory.getHandler(type);
             handler.handle(message);
+
+            // Разбор сообщения и отправка в Kafka
             switch (type) {
                 case EMAIL:
                     Email email = new ObjectMapper().readValue(message, Email.class);
@@ -46,10 +49,10 @@ public class NotificationController {
             return ResponseEntity.ok("Notification processed and sent to Kafka successfully.");
         } catch (IllegalArgumentException e) {
             log.error("Invalid notification type: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Unsupported notification type: " + type);
         } catch (Exception e) {
             log.error("Failed to process notification", e);
-            return ResponseEntity.status(500).body("Internal server error.");
+            return ResponseEntity.badRequest().body("Invalid request format for " + type.name().toLowerCase() + " notification.");
         }
     }
 
